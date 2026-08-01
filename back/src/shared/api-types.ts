@@ -803,22 +803,3 @@ export interface operations {
         };
     };
 }
-
-// Convenience type aliases
-export type ApiError = components['schemas']['ApiError'];
-export type Booking = components['schemas']['Booking'];
-export type BookingCreate = components['schemas']['BookingCreate'];
-export type BookingScope = components['schemas']['BookingScope'];
-export type DaySlots = components['schemas']['DaySlots'];
-export type ErrorCode = components['schemas']['ErrorCode'];
-export type EventType = components['schemas']['EventType'];
-export type EventTypeCreate = components['schemas']['EventTypeCreate'];
-export type Guest = components['schemas']['Guest'];
-export type Owner = components['schemas']['Owner'];
-export type PageBooking = components['schemas']['PageBooking'];
-export type PageEventType = components['schemas']['PageEventType'];
-export type Slot = components['schemas']['Slot'];
-export type SlotsResponse = components['schemas']['SlotsResponse'];
-export type Timezone = components['schemas']['Timezone'];
-export type WorkingHours = components['schemas']['WorkingHours'];
-export type PaginationQuery = components['parameters'];
