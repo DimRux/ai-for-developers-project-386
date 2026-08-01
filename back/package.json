@@ -10,7 +10,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "api:gen": "openapi-typescript ../spec/generated/openapi.yaml -o src/shared/api-types.ts",
+    "api:gen": "openapi-typescript ../spec/generated/openapi.yaml -o src/shared/api-types.ts && echo '\n// Convenience type aliases\nexport type ApiError = components[\"schemas\"][\"ApiError\"];\nexport type Booking = components[\"schemas\"][\"Booking\"];\nexport type BookingCreate = components[\"schemas\"][\"BookingCreate\"];\nexport type BookingScope = components[\"schemas\"][\"BookingScope\"];\nexport type DaySlots = components[\"schemas\"][\"DaySlots\"];\nexport type ErrorCode = components[\"schemas\"][\"ErrorCode\"];\nexport type EventType = components[\"schemas\"][\"EventType\"];\nexport type EventTypeCreate = components[\"schemas\"][\"EventTypeCreate\"];\nexport type Guest = components[\"schemas\"][\"Guest\"];\nexport type Owner = components[\"schemas\"][\"Owner\"];\nexport type PageBooking = components[\"schemas\"][\"PageBooking\"];\nexport type PageEventType = components[\"schemas\"][\"PageEventType\"];\nexport type Slot = components[\"schemas\"][\"Slot\"];\nexport type SlotsResponse = components[\"schemas\"][\"SlotsResponse\"];\nexport type Timezone = components[\"schemas\"][\"Timezone\"];\nexport type WorkingHours = components[\"schemas\"][\"WorkingHours\"];\nexport type PaginationQuery = components[\"parameters\"];' >> src/shared/api-types.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:prod": "prisma migrate deploy",
