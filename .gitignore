@@ -29,9 +29,9 @@ npm-debug.log*
 coverage/
 .nyc_output/
 
-# Test databases
-back/test.db
-back/e2e.db
+# Databases
+*.db
+back/prisma/*.db
 
 # Playwright
 test-results/
