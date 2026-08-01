@@ -1,0 +1,22 @@
+{
+  "name": "booking-calendar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lightweight booking calendar — cal.com-like",
+  "workspaces": [
+    "spec",
+    "front",
+    "back"
+  ],
+  "scripts": {
+    "spec:compile": "npm run compile -w spec",
+    "spec:watch": "npm run watch -w spec",
+    "spec:format": "npm run format -w spec",
+    "front:dev": "npm run dev -w front",
+    "front:mock": "npm run dev:mock -w front",
+    "front:build": "npm run build -w front",
+    "front:lint": "npm run lint -w front",
+    "front:api:gen": "npm run api:gen -w front",
+    "sync:contract": "npm run spec:compile && npm run front:api:gen"
+  }
+}
