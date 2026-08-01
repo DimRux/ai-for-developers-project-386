@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:mock": "concurrently \"npm run prism\" \"vite\"",
+    "dev:mock": "concurrently \"npm run prism\" \"vite --mode mock\"",
+    "dev:real": "vite --mode development",
     "dev:api": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

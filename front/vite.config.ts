@@ -5,6 +5,7 @@ import path from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
+  const shouldStripPrefix = env.VITE_API_STRIP_PREFIX === 'true';
 
   return {
     plugins: [react(), tailwindcss()],
@@ -19,7 +20,9 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: env.VITE_API_PROXY_TARGET,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/v1/, ''),
+          ...(shouldStripPrefix
+            ? { rewrite: (p: string) => p.replace(/^\/api\/v1/, '') }
+            : {}),
         },
       },
     },

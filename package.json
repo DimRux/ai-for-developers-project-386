@@ -17,6 +17,15 @@
     "front:build": "npm run build -w front",
     "front:lint": "npm run lint -w front",
     "front:api:gen": "npm run api:gen -w front",
-    "sync:contract": "npm run spec:compile && npm run front:api:gen"
+    "back:dev": "npm run dev -w back",
+    "back:build": "npm run build -w back",
+    "back:start": "npm run start:prod -w back",
+    "back:lint": "npm run lint -w back",
+    "back:api:gen": "npm run api:gen -w back",
+    "db:migrate": "npm run prisma:migrate -w back",
+    "db:seed": "npm run db:seed -w back",
+    "db:reset": "npm run db:reset -w back",
+    "sync:contract": "npm run spec:compile && npm run front:api:gen && npm run back:api:gen",
+    "dev": "concurrently \"npm run back:dev\" \"npm run front:dev\""
   }
 }

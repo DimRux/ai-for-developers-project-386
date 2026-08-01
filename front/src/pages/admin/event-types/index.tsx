@@ -11,6 +11,7 @@ import {
   Input,
   Label,
 } from '@/shared/ui';
+import { ApiRequestError } from '@/shared/api/client';
 
 export function AdminEventTypes() {
   const { data, isLoading } = useAdminEventTypes();
@@ -22,6 +23,8 @@ export function AdminEventTypes() {
     description: '',
     durationMinutes: 30,
   });
+  const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   if (isLoading) {
     return <div className="p-8 text-center text-muted-foreground">Загрузка...</div>;
@@ -29,10 +32,29 @@ export function AdminEventTypes() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
+    setFieldErrors({});
+
     createEventType.mutate(form, {
       onSuccess: () => {
         setIsDialogOpen(false);
         setForm({ id: '', title: '', description: '', durationMinutes: 30 });
+      },
+      onError: (error) => {
+        if (error instanceof ApiRequestError) {
+          switch (error.code) {
+            case 'EVENT_TYPE_ID_CONFLICT':
+              setFieldErrors({ id: 'Тип события с таким ID уже существует' });
+              break;
+            case 'VALIDATION_ERROR':
+              setFormError(error.message);
+              break;
+            default:
+              setFormError('Произошла ошибка при создании типа события.');
+          }
+        } else {
+          setFormError('Произошла ошибка при создании типа события.');
+        }
       },
     });
   };
@@ -47,6 +69,11 @@ export function AdminEventTypes() {
             <DialogTitle>Новый тип события</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {formError && (
+              <div className="rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+                {formError}
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="et-id">ID</Label>
               <Input
@@ -57,6 +84,9 @@ export function AdminEventTypes() {
                 }
                 required
               />
+              {fieldErrors.id && (
+                <p className="text-sm text-destructive">{fieldErrors.id}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="et-title">Название</Label>
