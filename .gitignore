@@ -28,3 +28,13 @@ npm-debug.log*
 # Coverage
 coverage/
 .nyc_output/
+
+# Test databases
+back/test.db
+back/e2e.db
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+.playwright/

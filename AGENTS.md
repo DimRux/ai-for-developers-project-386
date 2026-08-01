@@ -40,6 +40,11 @@ npm run db:migrate             # prisma migrate dev
 npm run db:seed                # seed Owner + demo EventTypes
 npm run db:reset               # prisma migrate reset --force
 
+# Testing
+npm run back:test              # API integration tests (Jest + supertest)
+npm run e2e                    # Playwright E2E tests (starts back + front)
+npm run e2e:ui                 # Playwright UI mode
+
 # Development
 npm run dev                    # concurrently back:dev + front:dev
 
@@ -67,7 +72,10 @@ Feature-Sliced Design structure under `front/src/`:
 - `widgets/` — composite UI blocks: booking-form, bookings-table, event-type-card, event-types-list, slots-calendar
 - `features/` — user interactions: create-booking, create-event-type, filter-bookings
 - `entities/` — domain models: booking, event-type, owner, slot
+- `components/ui/` — shadcn/ui primitives (button, calendar, card, dialog, input, label, select, table, toast)
 - `shared/` — API client (axios, baseURL `/api/v1`), config, UI primitives (shadcn), lib utilities
+- `lib/utils.ts` — utility functions (cn helper for classnames)
+- `assets/` — static assets (images, icons)
 
 Path alias: `@/` → `front/src/`
 
@@ -143,8 +151,94 @@ NestJS modules under `back/src/`:
 docker compose up --build    # backend on :3000, frontend on :8080 (nginx)
 ```
 
+- `back/Dockerfile` — multi-stage build for NestJS backend
+- `front/Dockerfile` — multi-stage build with nginx for frontend
+- `front/nginx.conf` — nginx config for SPA routing and API proxy
+- `back/docker-entrypoint.sh` — runs migrations and seeds before starting the server
+- `back/.env.example`, `front/.env.example` — example environment files
+
+## Documentation
+
+- `docs/TEST-SCENARIOS.md` — detailed user scenarios (US-1 through US-7) for integration testing
+- `spec/DOMAIN.md` — full domain model and invariants
+- `CONTRIBUTING.md` — commit convention and contribution guidelines
+
+## Testing
+
+### API Integration Tests (Jest + supertest)
+
+Located in `back/test/`. Run with `npm run back:test`.
+
+Test files:
+- `booking-flow.e2e-spec.ts` — US-1..US-4: full booking lifecycle, slot availability, double booking, global occupancy
+- `admin.e2e-spec.ts` — US-5..US-6: owner profile, event type CRUD, admin bookings list
+- `errors.e2e-spec.ts` — US-7: all error codes (VALIDATION_ERROR, SLOT_TAKEN, SLOT_NOT_ALIGNED, etc.)
+
+Helpers:
+- `helpers/app.ts` — creates NestJS test app with same pipes/filters as production
+- `helpers/slots.ts` — dynamically finds first available slot from API
+- `setup-db.js` — creates fresh test database (test.db) with migrations + seed
+
+### E2E Tests (Playwright)
+
+Located in `e2e/`. Run with `npm run e2e`.
+
+Test files:
+- `booking.spec.ts` — end-to-end booking flow through the UI
+- `admin.spec.ts` — admin dashboard and event type management
+
+Setup:
+- `setup-backend.sh` — prepares e2e.db, builds and starts backend
+- `playwright.config.ts` — starts both backend and frontend via webServer config
+
+## Commit Convention
+
+All commits MUST follow [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+<type>[optional scope]: <description>
+```
+
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+**Scopes:** `back`, `front`, `spec`, `ci`, `deps` (= workspace name)
+
+**Examples:**
+```
+feat(back): add global occupancy check for slots
+fix(front): correct slot timezone rendering in calendar
+test(back): add integration tests for booking creation
+ci: add Playwright E2E workflow
+```
+
+**Rules:**
+- Imperative mood ("add" not "added")
+- No capitalization of first letter
+- No period at end
+- Under 72 characters
+- One logical change per commit
+
+See `CONTRIBUTING.md` for full specification.
+
+## Release Automation
+
+This project uses [release-please](https://github.com/googleapis/release-please) for automated releases.
+
+- Workflow: `.github/workflows/release-please.yml`
+- Config: `release-please-config.json`
+- Manifest: `.release-please-manifest.json`
+- Strategy: `node` (bumps `version` in root `package.json`, generates `CHANGELOG.md`)
+- Starts from version `1.0.0`
+
+After merging Conventional Commits to `main`, release-please automatically:
+1. Creates/updates a release PR with changelog and proposed version bump
+2. When the release PR is merged, creates a GitHub Release
+
 ## CI
 
-- Only `hexlet-check.yml` — runs Hexlet project tests on push to any branch
-- **Do not edit or delete** `.github/workflows/hexlet-check.yml`
-- Tests run automatically once all tasks are completed in the Hexlet interface
+- `.github/workflows/ci.yml` — runs on push to any branch and PRs to main
+  - **lint-build**: npm ci, prisma generate, sync:contract, lint (front + back), build (front + back)
+  - **api-tests**: Jest integration tests (needs lint-build)
+  - **e2e**: Playwright E2E tests (needs lint-build)
+- `.github/workflows/release-please.yml` — automated releases on push to main
+- `.github/workflows/hexlet-check.yml` — **Do not edit or delete**

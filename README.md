@@ -1,101 +1,149 @@
-### Hexlet tests and linter status:
+# Booking Calendar
+
 [![Actions Status](https://github.com/DimRux/ai-for-developers-project-386/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/DimRux/ai-for-developers-project-386/actions)
 
----
+Календарь бронирований (аналог cal.com) — npm workspaces монорепозиторий с `spec/`, `front/` и `back/`.
 
-## Quick Start
+## Быстрый старт
 
-### Prerequisites
+### Требования
 
 - Node.js 22+
 - npm (workspace mode)
 
-### Development
+### Разработка
 
 ```bash
-# Install dependencies
+# Установка зависимостей
 npm install
 
-# Run database migrations and seed
-cd back
-npm run prisma:migrate
+# Миграции базы данных и заполнение демо-данными
+npm run db:migrate
 npm run db:seed
-cd ..
 
-# Start both backend and frontend
+# Запуск бэкенда и фронтенда одновременно
 npm run dev
-# → Backend: http://localhost:3000/api/v1
-# → Frontend: http://localhost:5173
+# → Бэкенд: http://localhost:3000/api/v1
+# → Фронтенд: http://localhost:5173
 ```
 
-Or run individually:
+Или запускайте по отдельности:
 
 ```bash
-npm run back:dev    # NestJS watch mode on port 3000
-npm run front:dev   # Vite on port 5173, proxies /api → localhost:3000
+npm run back:dev    # NestJS в режиме watch на порту 3000
+npm run front:dev   # Vite на порту 5173, проксирует /api → localhost:3000
 ```
 
-### Mock Mode (no backend)
+### Режим мока (без бэкенда)
 
 ```bash
-npm run front:mock  # Prism mock API (port 4010) + Vite dev server
+npm run front:mock  # Prism mock API (порт 4010) + Vite dev server
 ```
 
 ### Docker
 
 ```bash
 docker compose up --build
-# → Backend: http://localhost:3000/api/v1
-# → Frontend: http://localhost:8080 (nginx)
+# → Бэкенд: http://localhost:3000/api/v1
+# → Фронтенд: http://localhost:8080 (nginx)
 ```
 
-### Smoke Tests
+### Тестирование
+
+```bash
+npm run back:test   # Интеграционные тесты API (Jest + supertest)
+npm run e2e         # E2E тесты (Playwright)
+npm run e2e:ui      # Playwright в режиме UI
+```
+
+### Smoke-тесты
 
 ```bash
 cd back
 node dist/main.js &
 sleep 2
 bash scripts/smoke.sh
-# 17 checks covering all 9 API operations
+# 17 проверок, покрывающих все 9 API-операций
 ```
 
-### Available Commands
+## Доступные команды
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start backend + frontend concurrently |
-| `npm run back:dev` | Backend in watch mode |
-| `npm run front:dev` | Frontend dev server |
-| `npm run front:mock` | Frontend with Prism mock (no backend needed) |
-| `npm run back:build` | Build backend |
-| `npm run front:build` | Build frontend |
-| `npm run sync:contract` | Regenerate types from TypeSpec for both workspaces |
-| `npm run db:migrate` | Run Prisma migrations |
-| `npm run db:seed` | Seed Owner + demo EventTypes |
-| `npm run db:reset` | Reset database |
+| Команда | Описание |
+|---------|----------|
+| `npm run dev` | Запуск бэкенда + фронтенда параллельно |
+| `npm run back:dev` | Бэкенд в режиме watch |
+| `npm run front:dev` | Dev-сервер фронтенда |
+| `npm run front:mock` | Фронтенд с Prism mock (бэкенд не нужен) |
+| `npm run back:build` | Сборка бэкенда |
+| `npm run front:build` | Сборка фронтенда |
+| `npm run sync:contract` | Перегенерация типов из TypeSpec для обоих workspace |
+| `npm run db:migrate` | Запуск Prisma миграций |
+| `npm run db:seed` | Заполнение Owner + демо EventTypes |
+| `npm run db:reset` | Сброс базы данных |
+| `npm run back:test` | Интеграционные тесты API |
+| `npm run e2e` | E2E тесты Playwright |
+| `npm run e2e:ui` | Playwright в интерактивном режиме |
 
-### Project Structure
+## Структура проекта
 
 ```
 booking-calendar/
-├── spec/                  # API contract (TypeSpec → OpenAPI)
+├── spec/                  # API-контракт (TypeSpec → OpenAPI)
+│   ├── main.tsp           # Исходный код API
+│   ├── generated/         # Сгенерированный OpenAPI 3.1
+│   └── DOMAIN.md          # Доменная модель и инварианты
 ├── front/                 # React SPA (Vite + Tailwind + shadcn/ui)
-│   └── src/
-│       ├── app/           # Providers, routes, global styles
-│       ├── pages/         # Route components
-│       ├── widgets/       # Composite UI blocks
-│       ├── features/      # User interactions
-│       ├── entities/      # Domain models
-│       └── shared/        # API client, config, UI primitives
+│   ├── src/
+│   │   ├── app/           # Провайдеры, маршруты, глобальные стили
+│   │   ├── pages/         # Компоненты страниц
+│   │   ├── widgets/       # Составные UI-блоки
+│   │   ├── features/      # Пользовательские взаимодействия
+│   │   ├── entities/      # Доменные модели
+│   │   ├── components/ui/ # shadcn/ui примитивы
+│   │   ├── shared/        # API-клиент, конфигурация, утилиты
+│   │   ├── lib/           # Вспомогательные функции
+│   │   └── assets/        # Статические ресурсы
+│   └── nginx.conf         # Конфигурация nginx для Docker
 ├── back/                  # NestJS REST API
-│   ├── prisma/            # Schema, migrations, seed
+│   ├── prisma/            # Схема, миграции, seed
+│   ├── test/              # Интеграционные тесты
+│   ├── scripts/           # Smoke-тесты
 │   └── src/
-│       ├── owner/         # Owner profile (read-only)
-│       ├── event-types/   # Admin + public controllers
-│       ├── bookings/      # Admin + public controllers
-│       ├── slots/         # Slot generation engine
-│       ├── common/        # Errors, filters, DTOs
-│       └── shared/        # Generated API types
-├── docker-compose.yml     # Full stack
-└── package.json           # Workspace root scripts
+│       ├── owner/         # Профиль владельца (read-only)
+│       ├── event-types/   # Админские + публичные контроллеры
+│       ├── bookings/      # Админские + публичные контроллеры
+│       ├── slots/         # Движок генерации слотов
+│       ├── common/        # Ошибки, фильтры, DTO
+│       └── shared/        # Сгенерированные API-типы
+├── e2e/                   # E2E тесты Playwright
+├── docs/                  # Документация
+│   └── TEST-SCENARIOS.md  # Сценарии тестирования (US-1..US-7)
+├── docker-compose.yml     # Полный стек
+├── Dockerfile             # Dockerfiles для бэкенда и фронтенда
+├── playwright.config.ts   # Конфигурация Playwright
+├── CONTRIBUTING.md        # Руководство по внесению вклада
+└── package.json           # Корневые скрипты workspace
 ```
+
+## Конвенция коммитов
+
+Все коммиты должны соответствовать формату [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>[optional scope]: <description>
+```
+
+**Типы:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+
+**Скоупы:** `back`, `front`, `spec`, `ci`, `deps`
+
+**Примеры:**
+```
+feat(back): add global occupancy check for slots
+fix(front): correct slot timezone rendering in calendar
+test(back): add integration tests for booking creation
+```
+
+## Лицензия
+
+MIT
