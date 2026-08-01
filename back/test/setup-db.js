@@ -18,7 +18,7 @@ const opts = { env, cwd: path.join(__dirname, '..'), stdio: 'pipe' };
 
 try {
   execSync('npx prisma migrate deploy', opts);
-  execSync('npx prisma db seed', opts);
+  execSync('npx ts-node --project tsconfig.json prisma/seed.ts', opts);
   console.log('Test database prepared successfully.');
 } catch (e) {
   console.error('Failed to prepare test database:', e.stderr?.toString() ?? e.message);
