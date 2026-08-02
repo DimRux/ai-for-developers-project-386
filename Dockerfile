@@ -29,12 +29,13 @@ WORKDIR /app
 RUN apk add --no-cache sqlite
 
 COPY --from=deps /repo/node_modules ./node_modules
-COPY --from=back-build /repo/node_modules/.prisma ./node_modules/.prisma
 COPY --from=back-build /repo/back/dist ./dist
 COPY --from=back-build /repo/back/prisma ./prisma
 COPY --from=front-build /repo/front/dist ./public
 COPY back/docker-entrypoint.sh ./
 RUN chmod +x docker-entrypoint.sh
+ENV DATABASE_URL=file:./prisma/dev.db
+RUN npx prisma generate
 
 ENV PORT=3000
 EXPOSE 3000
