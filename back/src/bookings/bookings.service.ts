@@ -5,6 +5,7 @@ import { Booking, PageBooking, BookingScope } from '../shared/api-types';
 import { PaginationQuery } from '../common/dto/pagination-query.dto';
 import { ApiException } from '../common/exceptions/api.exception';
 import { DateTime } from 'luxon';
+import type { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BookingsService {
@@ -55,7 +56,7 @@ export class BookingsService {
 
     const end = start.plus({ minutes: event.durationMinutes });
 
-    const booking = await this.prisma.$transaction(async (tx) => {
+    const booking = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const conflict = await tx.booking.findFirst({
         where: {
           start: { lt: end.toJSDate() },
